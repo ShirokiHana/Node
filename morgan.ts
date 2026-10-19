@@ -1,0 +1,5 @@
+"use strict";
+
+import morgan from "morgan";
+
+export default morgan( 'tiny' );
