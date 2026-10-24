@@ -14,6 +14,8 @@ import suppliersPage from "../public/suppliers";
 import ordersPage from "../public/orders";
 import orderDetailPage from "../public/orderDetail";
 
+// HTML rendering only
+
 const appRouter = express.Router();
 
 // --------Functions
@@ -25,21 +27,20 @@ const selectSupplierRoute = ( request : Request, response : Response, _next : Ne
 const renderHTML = ( fn : ( arg0 : Request ) => string | Promise<string> ) =>
     async ( request : Request, response : Response, next : NextFunction ) => {
         try {
-            console.log( 'Page' );
             response.type( "html" ).send( await fn(request) );
         } catch ( error ) {
             next( error );
         }
     }
 
-const createOrderRoute = async ( request : Request, response : Response, next : NextFunction ) => {
-    try {
-        const order_id = await createOrder( Number( request.params.supplier_id ), request.body );
-        response.redirect( 303, `/restock/${ order_id }`);
-    } catch ( error ) {
-        next( error );
+    const createOrderRoute = async ( request : Request, response : Response, next : NextFunction ) => {
+        try {
+            const order_id = await createOrder( Number( request.params.supplier_id ), request.body );
+            response.redirect( 303, `/restock/${ order_id }`);
+        } catch ( error ) {
+            next( error );
+        }
     }
-}
 
 // --------Middleware
 
@@ -74,7 +75,6 @@ appRouter.route('/:supplier_id/cart' )
     // TODO: Require supplier middleware, enforce
     .get( viewRequestBody, requireSupplier, renderHTML( orderPage ) )
     .post( validateId( 'supplier_id' ),
-            viewRequestBody,
             modifyRequestBody( reshapeCart ),
             validateCart,
             createOrderRoute

@@ -1,17 +1,17 @@
+// noinspection ExceptionCaughtLocallyJS
+
 "use strict";
 
 import { CartItem }  from "../types/types";
 import mysqlConn from "./mysqlConn";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
+import {ValidationError} from "../lib/errors";
 
 const minutesPerItem = 30;
 
 export default async function( supplier_id : number, cart : CartItem[] ) : Promise<number> {
     // dedicated pool conn
     const connection = await mysqlConn.getConnection();
-
-    console.log( 'supplier id', supplier_id ); //------------------------------------------------------
-    console.log( 'cart', cart ); //------------------------------------------------------
 
     try {
         // begin transaction, turn off auto commit, only final upon commit()
@@ -22,11 +22,13 @@ export default async function( supplier_id : number, cart : CartItem[] ) : Promi
             'SELECT part_id, price FROM parts WHERE supplier_id = ? AND part_id IN ( ? )',
             [ supplier_id, cart.map( element => element.part_id ) ]
         );
-        console.log( 'parts', parts ); //------------------------------------------------------
+
+        if ( parts.length !== cart.length )
+            throw new ValidationError( 'Sorry, some items are currently out of stock.' )
 
         // price lookup table
         const prices = new Map( parts.map( part => [ Number( part.part_id ), part.price ] ) );
-        console.log( 'prices', prices ); //------------------------------------------------------
+
         // for arrival time
         const totalUnits = cart.reduce( ( sum, item ) => sum + item.quantity, 0 );
 

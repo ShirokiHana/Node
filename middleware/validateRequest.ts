@@ -20,10 +20,19 @@ import {ValidationError} from "../lib/errors";
         _response : Response,
         next : NextFunction
         ) => {
-        const cart : CartItem[] = request.body;
+        const cart : CartItem[] = request.body.items;
 
         if ( !Array.isArray( cart ) || cart.length === 0 )
             throw new ValidationError( 'Cart is empty' );
+
+        const valid = cart.every(
+            ( item : any ) =>
+                isPositiveInt( item?.part_id ) &&
+                isPositiveInt( item?.quantity )
+        )
+
+        if ( !valid )
+            throw new ValidationError( 'Cart has invalid items' );
 
         next();
     }

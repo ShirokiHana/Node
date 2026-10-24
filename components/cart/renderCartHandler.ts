@@ -13,11 +13,11 @@ export default function() { return `
             [] );
         
         const renderCart = ( cart, cartList ) => {
-        cartList.innerHTML = cart.map( item => {
-        const part = parts.find( p => p.part_id === item.part_id );
-            return '<li>' + part.part_name + ' - ' + item.quantity +
-                '<input type="hidden" name="quantity[' + item.part_id + ']" value="' + item.quantity + '">' +
-              '</li>';
+            cartList.innerHTML = cart.map( ( item ) => {
+            const part = parts.find( p => p.part_id === item.part_id );
+                return '<li>' + part.part_name + ' - ' + item.quantity +
+                        '<input type="hidden" name="quantity[' + item.part_id + ']" value="' + item.quantity + '">' +
+                        '</li>';
             } ).join( '' );
         };
         

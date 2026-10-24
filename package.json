@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "npx tsx index.ts",
+    "dev": "npx tsx watch index.ts",
     "startMySQL": "brew services start mysql",
     "stopMySQL": "brew services stop mysql"
   },
@@ -18,6 +20,7 @@
     "serve-static": "2.2.1"
   },
   "devDependencies": {
+    "tsx": "4.23.15",
     "@types/body-parser": "1.19.6",
     "@types/express": "5.0.6",
     "@types/jsonwebtoken": "9.0.10",

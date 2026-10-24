@@ -61,6 +61,17 @@ const deleteSupplier = partial(
     }, 204
 )
 
+const getSupplierParts = partial(
+    (request) =>
+        findAll(
+            `SELECT part_id, part_name, part_type, price
+             FROM parts
+             WHERE supplier_id = ?
+             ORDER BY part_type, part_name`,
+            [ Number( request.params.id ) ]
+        )
+);
+
 // --------Guards
 
 // list comprehension guard
@@ -87,6 +98,10 @@ supplierRouter.route( '/:id' )
     .get( validateId(), getSuppliersById )
     .put( validateId(), ...supplierBody, updateSupplier )
     .delete( validateId(), deleteSupplier )
+;
+
+supplierRouter.route('/:id/parts')
+    .get( validateId(), getSupplierParts )
 ;
 
 // --------Error Bubbling

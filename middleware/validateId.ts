@@ -3,6 +3,8 @@
 import { NextFunction, Request, Response } from 'express';
 import { ValidationError } from "../lib/errors";
 
+// TODO: Rewrite
+
 export default ( param = 'id' ) =>
     ( request : Request, _response : Response, next : NextFunction ) => {
         const value = request.params[ param ];

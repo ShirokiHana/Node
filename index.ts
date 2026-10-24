@@ -8,7 +8,7 @@ import * as http from "node:http";
 import morgan from "./morgan";
 // import getDirname from "./helper/getDirname";
 import orderRouter from "./routes/order";
-import appRouter from "./routes/app";
+// import appRouter from "./routes/app";
 
 const app : Express = express();
 
@@ -25,8 +25,9 @@ app.use( express.json() )
 
 // --------Routing
 app.use( '/supplier', supplierRouter );
-app.use( '/restock', appRouter );
 app.use( '/order', orderRouter );
+
+// app.use( '/restock', appRouter );
 
 // --------Server
 

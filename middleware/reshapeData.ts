@@ -1,8 +1,7 @@
 "use strict";
 
 import { NextFunction, Request, Response } from 'express';
-import {ValidationError} from "../lib/errors";
-import {CartItem} from "../types/types";
+import { CartItem } from "../types/types";
 
 export const viewRequestBody = ( request : Request, _response : Response, next : NextFunction ) => {
     console.log( 'Request body', request.body );
@@ -37,11 +36,22 @@ export const reshapeSupplier : Reshape<any> = ( input : any ) => {
     };
 };
 
-export const reshapeCart : Reshape<CartItem[]> = ( input : any ) =>
-    Object.entries( input?.quantity ?? {} ).map( ( [ part_id, quantity ] ) => ( {
+export const reshapeCart : Reshape<CartItem[]> = ( input : any ) => {
+    // PHP side specific bundler, request is an object
+    if ( Array.isArray( input?.items ) ) {
+        return input.items.map( ( item : any ) => (
+            {
+                part_id: Number( item?.part_id ),
+                quantity: Number( item?.quantity ),
+            }
+        ) )
+    }
+
+    return Object.entries( input?.quantity ?? {} ).map( ( [ part_id, quantity ] ) => ( {
         part_id: Number( part_id ),
         quantity: Number( quantity ),
     } ) );
+}
 
 
 export const reshapeOrderFilters : Reshape<any> = ( input : any ) => ( {

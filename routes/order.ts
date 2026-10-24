@@ -5,10 +5,12 @@ import { Request, Response } from 'express';
 import validateId from "../middleware/validateId";
 import errorBubble from "../lib/errorBubble";
 import express from "express";
-import {validateOrderFilters, validateOrderStatus} from "../middleware/validateRequest";
-import {modifyQuery, reshapeOrderFilters} from "../middleware/reshapeData";
+import {validateCart, validateOrderFilters, validateOrderStatus} from "../middleware/validateRequest";
+import {modifyQuery, modifyRequestBody, reshapeCart, reshapeOrderFilters} from "../middleware/reshapeData";
 import loadOrder from "../middleware/loadOrder";
-import {NotFoundError} from "../lib/errors";
+import { NotFoundError, ValidationError } from "../lib/errors";
+import createOrder from "../model/createOrder";
+import {CartItem} from "../types/types";
 
 const orderRouter = express.Router();
 
@@ -53,6 +55,23 @@ const orderRouter = express.Router();
         }
     );
 
+    const createOrderRoute = partial(
+        async ( request : Request ) => {
+            console.log( request.body );
+            const supplierId = Number( request.body?.supplier_id );
+            const cart : CartItem[] = request.body?.items;
+
+            // TODO: Cut.
+            if ( !Number.isInteger( supplierId) || supplierId <= 0 ) {
+                throw new ValidationError("Invalid supplier_id route");
+            }
+
+            const orderId = await createOrder( supplierId, cart );
+
+            return { order_id: orderId, message: "created" };
+        }
+    )
+
 // --------Middleware
 
     export const findOrder = ( id : string ) =>
@@ -71,19 +90,17 @@ const orderRouter = express.Router();
 // --------Routing
 
 orderRouter.route( '/' )
-    .get( modifyQuery( reshapeOrderFilters ), validateOrderFilters, getOrdersRoute )
+    .get( modifyQuery( reshapeOrderFilters ), validateOrderFilters, getOrdersRoute ) // ✅
+    .post( express.json(), validateCart, createOrderRoute ) // body MUST be cart only
 ;
 
 orderRouter.route( '/:id' )
-    .get( validateId(), loadOrder, getOrderRoute )
+    .get( validateId(), loadOrder, getOrderRoute ) // ✅
+    .patch( validateId(), express.json(), validateOrderStatus, updateOrderStatusRoute ) // ✅
 ;
 
 orderRouter.route( '/:id/items' )
-    .get( validateId(), loadOrder, getOrderItemsRoute )
-;
-
-orderRouter.route( '/:id/status' )
-    .patch( validateId(), express.json(), validateOrderStatus, updateOrderStatusRoute )
+    .get( validateId(), loadOrder, getOrderItemsRoute ) // ✅
 ;
 
 // --------Error Bubbling
