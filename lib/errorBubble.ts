@@ -25,7 +25,6 @@ export default (
     response : Response,
     next : NextFunction
     ) => {
-    console.error( error );
     if ( response.headersSent )
         return next( error );
 

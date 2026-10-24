@@ -6,7 +6,7 @@ import validateId from "../middleware/validateId";
 import errorBubble from "../lib/errorBubble";
 import express from "express";
 import {validateCart, validateOrderFilters, validateOrderStatus} from "../middleware/validateRequest";
-import {modifyQuery, modifyRequestBody, reshapeCart, reshapeOrderFilters} from "../middleware/reshapeData";
+import {modifyQuery, reshapeOrderFilters} from "../middleware/reshapeData";
 import loadOrder from "../middleware/loadOrder";
 import { NotFoundError, ValidationError } from "../lib/errors";
 import createOrder from "../model/createOrder";
@@ -57,7 +57,6 @@ const orderRouter = express.Router();
 
     const createOrderRoute = partial(
         async ( request : Request ) => {
-            console.log( request.body );
             const supplierId = Number( request.body?.supplier_id );
             const cart : CartItem[] = request.body?.items;
 
