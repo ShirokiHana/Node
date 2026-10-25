@@ -47,9 +47,7 @@ The separate autolux_db database stores customers, local stock, payment
 methods, sales and supplier-order synchronization records. PHP accesses
 that database directly; the Node.js service does not update local PHP stock.
 
-The data source is the supplied MySQL demonstration data. The A/B/C
-classification mentioned in the assignment brief is awaiting clarification
-from the teacher.
+The data source is the supplied MySQL demonstration data.
 
 Matching parts in both databases use the same part_id and must represent
 the same product. Preserve these mappings when changing the sample data.
